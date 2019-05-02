@@ -248,8 +248,7 @@ the tests should work as expected.
 	public void test() {
 	    Network network = Network.DefaultExample();
 	    StringWriter report = new StringWriter(100);
-	    network.requestWorkstationPrintsDocument("UnknownWorkstation",
-					      "does not matter", "does not matter", report);
+	    network.requestWorkstationPrintsDocument("Filip","does not matter", "does not matter", report);
 	}
 
   
