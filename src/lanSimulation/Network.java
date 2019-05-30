@@ -38,7 +38,7 @@ public class Network {
     Holds a pointer to some "first" node in the token ring.
     Used to ensure that various printing operations return expected behaviour.
 	 */
-	private Node firstNode_;
+	public Node firstNode_;
 	/**
     Maps the names of workstations on the actual workstations.
     Used to initiate the requests for the network.
@@ -273,42 +273,8 @@ Return a printable representation of #receiver.
 	public String toString () {
 		assert isInitialized();
 		StringBuffer buf = new StringBuffer(30 * workstations_.size());
-		printOn(buf);
+		firstNode_.printOn(this, buf);
 		return buf.toString();
-	}
-
-	/**
-Write a printable representation of #receiver on the given #buf.
-<p><strong>Precondition:</strong> isInitialized();</p>
-	 */
-	public void printOn (StringBuffer buf) {
-		assert isInitialized();
-		Node currentNode = firstNode_;
-		do {
-			switch (currentNode.type_) {
-			case Node.NODE:
-				buf.append("Node ");
-				buf.append(currentNode.name_);
-				buf.append(" [Node]");
-				break;
-			case Node.WORKSTATION:
-				buf.append("Workstation ");
-				buf.append(currentNode.name_);
-				buf.append(" [Workstation]");
-				break;
-			case Node.PRINTER:
-				buf.append("Printer ");
-				buf.append(currentNode.name_);
-				buf.append(" [Printer]");
-				break;
-			default:
-				buf.append("(Unexpected)");;
-				break;
-			};
-			buf.append(" -> ");
-			currentNode = currentNode.nextNode_;
-		} while (currentNode != firstNode_);
-		buf.append(" ... ");
 	}
 
 	/**
