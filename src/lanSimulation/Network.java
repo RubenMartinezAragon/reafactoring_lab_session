@@ -192,9 +192,7 @@ which should be treated by all nodes.
 		return true;
 	}
 
-	private boolean atDestination(Node currentNode, Packet packet) {
-		return packet.destination_.equals(currentNode.name_);
-	}    
+	   
 
 	/**
 The #receiver is requested by #workstation to print #document on #printer.
@@ -236,16 +234,19 @@ Therefore #receiver sends a packet across the token ring network, until either
 			// just ignore
 		};
 		currentNode = startNode.nextNode_;
-		while ((! atDestination(currentNode, packet))
-				& (! packet.origin_.equals(currentNode.name_))) {
-			try {
-				currentNode.logging(report, this);
-				report.flush();
-			} catch (IOException exc) {
-				// just ignore
-			};
-			currentNode = currentNode.nextNode_;
-		};
+		if((! atDestination(currentNode, packet))
+				& (! atOrigin(currentNode, packet))) {
+			do {
+				try {
+					currentNode.logging(report, this);
+					report.flush();
+				} catch (IOException exc) {
+					// just ignore
+				};
+				currentNode = currentNode.nextNode_;
+			}while ((! atDestination(currentNode, packet))
+					& (! atOrigin(currentNode, packet)));
+		}
 
 		if (atDestination(currentNode, packet)) {
 			result = packet.printDocument(currentNode, this, report);
@@ -261,6 +262,14 @@ Therefore #receiver sends a packet across the token ring network, until either
 
 		return result;
 	}
+
+	private boolean atOrigin(Node currentNode, Packet packet) {
+		return packet.origin_.equals(currentNode.name_);
+	}
+	
+	private boolean atDestination(Node currentNode, Packet packet) {
+		return packet.destination_.equals(currentNode.name_);
+	} 
 
 	public void accounting(Writer report, String author, String title) throws IOException {
 		report.write("\tAccounting -- author = '");
