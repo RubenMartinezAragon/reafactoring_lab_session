@@ -171,18 +171,7 @@ which should be treated by all nodes.
 
 		Node currentNode = firstNode_;
 		Packet packet = new Packet("BROADCAST", firstNode_.name_, firstNode_.name_);
-		do {
-			try {
-				report.write("\tNode '");
-				report.write(currentNode.name_);
-				report.write("' accepts broadcase packet.\n");
-				currentNode.logging(report, this);
-				report.flush();
-			} catch (IOException exc) {
-				// just ignore
-			};
-			currentNode = currentNode.nextNode_;
-		} while (! atDestination(currentNode, packet));
+		currentNode = send(report, currentNode, packet);
 
 		try {
 			report.write(">>> Broadcast travelled whole token ring.\n\n");
@@ -191,6 +180,8 @@ which should be treated by all nodes.
 		};
 		return true;
 	}
+
+	
 
 	   
 
@@ -228,6 +219,7 @@ Therefore #receiver sends a packet across the token ring network, until either
 		startNode = (Node) workstations_.get(workstation);
 
 		try {
+			
 			startNode.logging(report, this);
 			report.flush();
 		} catch (IOException exc) {
@@ -236,16 +228,7 @@ Therefore #receiver sends a packet across the token ring network, until either
 		currentNode = startNode.nextNode_;
 		if((! atDestination(currentNode, packet))
 				& (! atOrigin(currentNode, packet))) {
-			do {
-				try {
-					currentNode.logging(report, this);
-					report.flush();
-				} catch (IOException exc) {
-					// just ignore
-				};
-				currentNode = currentNode.nextNode_;
-			}while ((! atDestination(currentNode, packet))
-					& (! atOrigin(currentNode, packet)));
+			currentNode = send(report, currentNode, packet);
 		}
 
 		if (atDestination(currentNode, packet)) {
@@ -270,6 +253,24 @@ Therefore #receiver sends a packet across the token ring network, until either
 	private boolean atDestination(Node currentNode, Packet packet) {
 		return packet.destination_.equals(currentNode.name_);
 	} 
+	
+	private Node send(Writer report, Node currentNode, Packet packet) {
+		
+		try {
+				report.write("\tNode '");
+				report.write(currentNode.name_);
+				report.write("' accepts broadcase packet.\n");
+				currentNode.logging(report, this);
+				report.flush();
+		} catch (IOException exc) {
+				// just ignore
+		};
+		if ((! atDestination(currentNode, packet))
+				& (! atOrigin(currentNode, packet))) {
+			currentNode=send(report, currentNode.nextNode_, packet);
+		}
+		return currentNode;
+	}
 
 	public void accounting(Writer report, String author, String title) throws IOException {
 		report.write("\tAccounting -- author = '");
