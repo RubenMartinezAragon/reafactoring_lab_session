@@ -95,30 +95,19 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 		assert network.isInitialized();
 		Node currentNode = this;
 		do {
-			switch (currentNode.type_) {
-			case Node.NODE:
-				buf.append("Node ");
-				buf.append(currentNode.name_);
-				buf.append(" [Node]");
-				break;
-			case Node.WORKSTATION:
-				buf.append("Workstation ");
-				buf.append(currentNode.name_);
-				buf.append(" [Workstation]");
-				break;
-			case Node.PRINTER:
-				buf.append("Printer ");
-				buf.append(currentNode.name_);
-				buf.append(" [Printer]");
-				break;
-			default:
-				buf.append("(Unexpected)");;
-				break;
-			};
+		
+			currentNode.printName(buf);
+				
 			buf.append(" -> ");
 			currentNode = currentNode.nextNode_;
 		} while (currentNode != this);
 		buf.append(" ... ");
+	}
+
+	protected void printName(StringBuffer buf) {
+		buf.append("Node ");
+		buf.append(this.name_);
+		buf.append(" [Node]");
 	}
 
 	/**
@@ -135,26 +124,9 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 		buf.append("\n\n<UL>");
 		do {
 			buf.append("\n\t<LI> ");
-			switch (currentNode.type_) {
-			case Node.NODE:
-				buf.append("Node ");
-				buf.append(currentNode.name_);
-				buf.append(" [Node]");
-				break;
-			case Node.WORKSTATION:
-				buf.append("Workstation ");
-				buf.append(currentNode.name_);
-				buf.append(" [Workstation]");
-				break;
-			case Node.PRINTER:
-				buf.append("Printer ");
-				buf.append(currentNode.name_);
-				buf.append(" [Printer]");
-				break;
-			default:
-				buf.append("(Unexpected)");;
-				break;
-			};
+			
+			currentNode.printName(buf);
+				
 			buf.append(" </LI>");
 			currentNode = currentNode.nextNode_;
 		} while (currentNode != this);
@@ -170,33 +142,22 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 	public void printXMLOn (Network network, StringBuffer buf) {
 		assert network.isInitialized();
 	
-		Node currentNode = this;
+		Node currentNode = (Node) this;
 		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<network>");
 		do {
 			buf.append("\n\t");
-			switch (currentNode.type_) {
-			case Node.NODE:
-				buf.append("<node>");
-				buf.append(currentNode.name_);
-				buf.append("</node>");
-				break;
-			case Node.WORKSTATION:
-				buf.append("<workstation>");
-				buf.append(currentNode.name_);
-				buf.append("</workstation>");
-				break;
-			case Node.PRINTER:
-				buf.append("<printer>");
-				buf.append(currentNode.name_);
-				buf.append("</printer>");
-				break;
-			default:
-				buf.append("<unknown></unknown>");;
-				break;
-			};
-			currentNode = currentNode.nextNode_;
+			
+			currentNode.printNameXML(buf);
+				
+			currentNode = (Node) currentNode.nextNode_;
 		} while (currentNode != this);
 		buf.append("\n</network>");
+	}
+
+	protected void printNameXML(StringBuffer buf) {
+		buf.append("<node>");
+		buf.append(this.name_);
+		buf.append("</node>");
 	}
 
 }
