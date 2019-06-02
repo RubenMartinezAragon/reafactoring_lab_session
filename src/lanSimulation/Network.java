@@ -181,6 +181,31 @@ which should be treated by all nodes.
 		return true;
 	}
 
+	private Node send(Writer report, Node currentNode, Packet packet) {
+		
+		try {
+			if(packet.message_.equals("BROADCAST")) {
+				report.write("\tNode '");
+				report.write(currentNode.name_);
+				report.write("' accepts broadcase packet.\n");
+			}
+			currentNode.logging(report, this);
+			report.flush();
+		} catch (IOException exc) {
+				// just ignore
+		};
+		currentNode=currentNode.nextNode_;
+		if ((! atDestination(currentNode, packet))
+				& (! atOrigin(currentNode, packet))) {
+			currentNode=send( report, currentNode  , packet) ;
+		}
+		return currentNode;
+		
+	}
+	
+	private boolean atDestination(Node currentNode, Packet packet) {
+		return packet.destination_.equals(currentNode.name_);
+	}
 	
 
 	   
@@ -250,27 +275,9 @@ Therefore #receiver sends a packet across the token ring network, until either
 		return packet.origin_.equals(currentNode.name_);
 	}
 	
-	private boolean atDestination(Node currentNode, Packet packet) {
-		return packet.destination_.equals(currentNode.name_);
-	} 
 	
-	private Node send(Writer report, Node currentNode, Packet packet) {
-		
-		try {
-				report.write("\tNode '");
-				report.write(currentNode.name_);
-				report.write("' accepts broadcase packet.\n");
-				currentNode.logging(report, this);
-				report.flush();
-		} catch (IOException exc) {
-				// just ignore
-		};
-		if ((! atDestination(currentNode, packet))
-				& (! atOrigin(currentNode, packet))) {
-			currentNode=send(report, currentNode.nextNode_, packet);
-		}
-		return currentNode;
-	}
+	
+	
 
 	public void accounting(Writer report, String author, String title) throws IOException {
 		report.write("\tAccounting -- author = '");
